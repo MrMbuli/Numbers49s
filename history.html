@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>49s History</title>
+  <meta name="theme-color" content="#111" />
+  <style>
+    body {
+      background: #111;
+      color: #eee;
+      font-family: Arial, sans-serif;
+      padding: 1rem;
+      max-width: 600px;
+      margin: auto;
+    }
+    h1 {
+      color: #ffcc00;
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+      background: #222;
+      border-radius: 8px;
+      border: 1px solid #333;
+      overflow-y: auto;
+      max-height: 80vh;
+    }
+    li {
+      padding: 0.5rem;
+      border-bottom: 1px solid #333;
+      word-break: break-word;
+    }
+    a {
+      display: block;
+      margin-top: 1rem;
+      text-align: center;
+      color: #ffcc00;
+      text-decoration: none;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>📜 Your Lucky Number History</h1>
+  <ul id="historyList"></ul>
+  <a href="index.html">← Back to Generator</a>
+
+  <script>
+    const historyList = document.getElementById('historyList');
+    const history = JSON.parse(localStorage.getItem('history') || '[]');
+    history.forEach(item => {
+      const li = document.createElement('li');
+      li.textContent = item;
+      historyList.appendChild(li);
+    });
+  </script>
+</body>
+</html>
