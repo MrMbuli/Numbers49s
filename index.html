@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>49s Lucky Pick</title>
+  <link rel="manifest" href="manifest.json" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 1rem;
+      background: #222;
+      color: #eee;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+    h1 {
+      margin-bottom: 0.5rem;
+      color: #ffcc00;
+    }
+    #numbers {
+      font-size: 2rem;
+      margin: 1rem 0;
+      letter-spacing: 0.4rem;
+      font-weight: bold;
+    }
+    button {
+      background: #ffcc00;
+      border: none;
+      padding: 0.8rem 2rem;
+      font-size: 1.2rem;
+      border-radius: 6px;
+      cursor: pointer;
+      color: #222;
+      user-select: none;
+    }
+    button:hover {
+      background: #e6b800;
+    }
+    footer {
+      margin-top: auto;
+      font-size: 0.8rem;
+      color: #666;
+      padding: 1rem 0 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>49s Lucky Pick</h1>
+  <div id="numbers">-- -- -- -- --</div>
+  <button id="generateBtn">Generate Numbers</button>
+
+  <footer>© 2025 49s Lucky Pick</footer>
+
+  <script>
+    // Generate 5 unique numbers between 1 and 49
+    function generateNumbers() {
+      let nums = new Set();
+      while (nums.size < 5) {
+        nums.add(Math.floor(Math.random() * 49) + 1);
+      }
+      return Array.from(nums).sort((a,b) => a-b);
+    }
+
+    const numbersDiv = document.getElementById('numbers');
+    const btn = document.getElementById('generateBtn');
+
+    btn.addEventListener('click', () => {
+      const nums = generateNumbers();
+      numbersDiv.textContent = nums.map(n => n.toString().padStart(2,'0')).join(' ');
+    });
+
+    // Register service worker for offline support
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js').catch(e => {
+          console.log('ServiceWorker registration failed:', e);
+        });
+      });
+    }
+  </script>
+</body>
+</html>
