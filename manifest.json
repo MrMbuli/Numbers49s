@@ -1,11 +1,10 @@
 {
   "name": "49s Lucky Pick",
-  "short_name": "49sPick",
-  "start_url": ".",
+  "short_name": "49s Lucky Pick",
+  "start_url": "index.html",
   "display": "standalone",
-  "background_color": "#222222",
+  "background_color": "#111111",
   "theme_color": "#ffcc00",
-  "description": "Local UK 49s number generator app",
   "icons": [
     {
       "src": "icons/icon-192.png",
