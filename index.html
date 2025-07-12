@@ -221,6 +221,29 @@
 
     updateStatus();
     loadHistory();
+    <script>
+  // Replace this with the real unique user ID or device identifier
+  const userId = "user123"; // Could use a hash or random string
+
+  async function checkMembership(userId) {
+    try {
+      const res = await fetch(`https://your-server.com/unlocked_users/${userId}.txt`);
+      if (res.ok) {
+        const text = await res.text();
+        if (text.trim() === "paid") {
+          localStorage.setItem('isMember', 'true');
+          updateStatus();
+          alert("Your full membership has been activated!");
+        }
+      }
+    } catch (e) {
+      console.error("Membership check failed:", e);
+    }
+  }
+
+  // Run this once on load
+  checkMembership(userId);
+  </stricp>
   </script>
 </body>
 </html>
