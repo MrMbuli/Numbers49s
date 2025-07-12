@@ -76,30 +76,12 @@
       margin: 1rem 0;
       color: #aaa;
     }
-    #history {
-      margin-top: 1rem;
-      width: 100%;
-      max-width: 400px;
-      font-size: 0.9rem;
-    }
-    #history h2 {
-      margin: 0.5rem 0;
+    #cooldownTimer {
+      margin-top: 2rem;
+      font-size: 1.2rem;
       color: #ffcc00;
-      font-size: 1.1rem;
-    }
-    #history ul {
-      list-style: none;
-      padding: 0;
-      max-height: 180px;
-      overflow-y: auto;
-      border: 1px solid #444;
-      background: #222;
-      border-radius: 8px;
-    }
-    #history li {
-      padding: 0.5rem;
-      border-bottom: 1px solid #333;
-      word-break: break-word;
+      font-weight: bold;
+      user-select: none;
     }
     footer {
       margin-top: auto;
@@ -107,13 +89,6 @@
       color: #666;
       padding: 1rem 0 0;
       text-align: center;
-    }
-    #cooldownTimer {
-      margin-top: 2rem;
-      font-size: 1.2rem;
-      color: #ffcc00;
-      font-weight: bold;
-      user-select: none;
     }
   </style>
 </head>
@@ -123,24 +98,15 @@
   <div id="timer"></div>
   <button id="generateBtn">Generate 5 Sequences</button>
   <button id="membershipBtn">Join Full Membership (R10/month)</button>
-  <button id="resetBtn">Reset Membership & History</button>
-
-  <div id="history">
-    <h2>History</h2>
-    <ul id="historyList"></ul>
-  </div>
-
+  <a href="history.html"><button>📜 View History</button></a>
   <div id="cooldownTimer"></div>
-
   <footer>© 2025 49s Lucky Pick<br>Offline | 5x Picks | Bonus Number</footer>
 
   <script>
     const numbersDiv = document.getElementById('numbers');
     const generateBtn = document.getElementById('generateBtn');
     const membershipBtn = document.getElementById('membershipBtn');
-    const resetBtn = document.getElementById('resetBtn');
     const timerDiv = document.getElementById('timer');
-    const historyList = document.getElementById('historyList');
     const cooldownTimer = document.getElementById('cooldownTimer');
 
     const TEN_HOURS = 10 * 60 * 60 * 1000;
@@ -166,14 +132,12 @@
     function displaySets(sets) {
       numbersDiv.innerHTML = "";
 
-      // Highlight the first set as Top Pick
       const first = sets[0];
       const topSet = document.createElement('div');
       topSet.className = 'number-set top-pick';
       topSet.innerHTML = `Top Pick: ${first.main.map(n => n.toString().padStart(2,'0')).join(' ')} <span class="bonus">${first.bonus.toString().padStart(2,'0')}</span>`;
       numbersDiv.appendChild(topSet);
 
-      // Show remaining sets normally
       for (let i = 1; i < sets.length; i++) {
         const set = sets[i];
         const div = document.createElement('div');
@@ -190,16 +154,6 @@
       history.unshift(entry);
       if (history.length > 20) history = history.slice(0, 20);
       localStorage.setItem('history', JSON.stringify(history));
-    }
-
-    function loadHistory() {
-      historyList.innerHTML = '';
-      const history = JSON.parse(localStorage.getItem('history') || '[]');
-      history.forEach(item => {
-        const li = document.createElement('li');
-        li.textContent = item;
-        historyList.appendChild(li);
-      });
     }
 
     function updateStatus() {
@@ -238,7 +192,6 @@
         localStorage.setItem('lastGenerated', Date.now().toString());
       }
       updateStatus();
-      loadHistory();
     });
 
     membershipBtn.addEventListener('click', () => {
@@ -250,13 +203,6 @@
       }
     });
 
-    resetBtn.addEventListener('click', () => {
-      if (confirm("Are you sure you want to reset all data?")) {
-        localStorage.clear();
-        location.reload();
-      }
-    });
-
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('sw.js');
@@ -264,7 +210,6 @@
     }
 
     updateStatus();
-    loadHistory();
   </script>
 </body>
 </html>
