@@ -28,11 +28,31 @@
       padding: 0.5rem;
       background: #222;
       border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .top-pick {
+      background: #333;
+      font-size: 1.5rem;
+      border: 2px solid #ffcc00;
+      margin-bottom: 1rem;
+      font-weight: bold;
     }
     .bonus {
-      color: #00ffff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: #00ffff;
+      color: #111;
       font-weight: bold;
+      border-radius: 50%;
+      width: 28px;
+      height: 28px;
       margin-left: 1rem;
+      font-size: 1.1rem;
+      user-select: none;
+      box-shadow: 0 0 6px #00ffffaa;
     }
     button {
       background: #ffcc00;
@@ -79,6 +99,7 @@
     #history li {
       padding: 0.5rem;
       border-bottom: 1px solid #333;
+      word-break: break-word;
     }
     footer {
       margin-top: auto;
@@ -86,6 +107,13 @@
       color: #666;
       padding: 1rem 0 0;
       text-align: center;
+    }
+    #cooldownTimer {
+      margin-top: 2rem;
+      font-size: 1.2rem;
+      color: #ffcc00;
+      font-weight: bold;
+      user-select: none;
     }
   </style>
 </head>
@@ -102,6 +130,8 @@
     <ul id="historyList"></ul>
   </div>
 
+  <div id="cooldownTimer"></div>
+
   <footer>© 2025 49s Lucky Pick<br>Offline | 5x Picks | Bonus Number</footer>
 
   <script>
@@ -111,6 +141,7 @@
     const resetBtn = document.getElementById('resetBtn');
     const timerDiv = document.getElementById('timer');
     const historyList = document.getElementById('historyList');
+    const cooldownTimer = document.getElementById('cooldownTimer');
 
     const TEN_HOURS = 10 * 60 * 60 * 1000;
 
@@ -134,12 +165,22 @@
 
     function displaySets(sets) {
       numbersDiv.innerHTML = "";
-      sets.forEach((set, index) => {
+
+      // Highlight the first set as Top Pick
+      const first = sets[0];
+      const topSet = document.createElement('div');
+      topSet.className = 'number-set top-pick';
+      topSet.innerHTML = `Top Pick: ${first.main.map(n => n.toString().padStart(2,'0')).join(' ')} <span class="bonus">${first.bonus.toString().padStart(2,'0')}</span>`;
+      numbersDiv.appendChild(topSet);
+
+      // Show remaining sets normally
+      for (let i = 1; i < sets.length; i++) {
+        const set = sets[i];
         const div = document.createElement('div');
         div.className = 'number-set';
-        div.innerHTML = `Set ${index + 1}: ${set.main.map(n => n.toString().padStart(2,'0')).join(' ')} <span class="bonus">[${set.bonus.toString().padStart(2,'0')}]</span>`;
+        div.innerHTML = `Set ${i + 1}: ${set.main.map(n => n.toString().padStart(2,'0')).join(' ')} <span class="bonus">${set.bonus.toString().padStart(2,'0')}</span>`;
         numbersDiv.appendChild(div);
-      });
+      }
     }
 
     function addToHistory(sets) {
@@ -169,6 +210,7 @@
       if (isMember) {
         generateBtn.classList.remove('disabled');
         timerDiv.textContent = "Full Member Access: Unlimited sets.";
+        cooldownTimer.textContent = "";
       } else {
         const remaining = TEN_HOURS - (now - lastGen);
         if (remaining > 0) {
@@ -177,10 +219,12 @@
           const mins = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
           const secs = Math.floor((remaining % (1000 * 60)) / 1000);
           timerDiv.textContent = `Next free batch in: ${hrs}h ${mins}m ${secs}s`;
+          cooldownTimer.textContent = `⏳ Please wait ${hrs}h ${mins}m ${secs}s before generating new numbers.`;
           setTimeout(updateStatus, 1000);
         } else {
           generateBtn.classList.remove('disabled');
           timerDiv.textContent = "Free Batch Available!";
+          cooldownTimer.textContent = "";
         }
       }
     }
@@ -221,29 +265,6 @@
 
     updateStatus();
     loadHistory();
-    <script>
-  // Replace this with the real unique user ID or device identifier
-  const userId = "user123"; // Could use a hash or random string
-
-  async function checkMembership(userId) {
-    try {
-      const res = await fetch(`https://your-server.com/unlocked_users/${userId}.txt`);
-      if (res.ok) {
-        const text = await res.text();
-        if (text.trim() === "paid") {
-          localStorage.setItem('isMember', 'true');
-          updateStatus();
-          alert("Your full membership has been activated!");
-        }
-      }
-    } catch (e) {
-      console.error("Membership check failed:", e);
-    }
-  }
-
-  // Run this once on load
-  checkMembership(userId);
-  </stricp>
   </script>
 </body>
 </html>
