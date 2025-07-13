@@ -100,7 +100,8 @@
   <button id="membershipBtn">Join Full Membership (R10/month)</button>
   <a href="history.html"><button>📜 View History</button></a>
   <div id="cooldownTimer"></div>
-  <footer>© 2025 49s Lucky Pick<br>Offline | 5x Picks | Bonus Number</footer>
+
+  <footer>© 2025 49s Lucky Pick<br>Offline | 6x Picks | Bonus Number</footer>
 
   <script>
     const numbersDiv = document.getElementById('numbers');
@@ -113,7 +114,7 @@
 
     function generateSet() {
       let main = new Set();
-      while (main.size < 5) main.add(Math.floor(Math.random() * 49) + 1);
+      while (main.size < 6) main.add(Math.floor(Math.random() * 49) + 1);
       let bonus;
       do {
         bonus = Math.floor(Math.random() * 49) + 1;
