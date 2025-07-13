@@ -94,11 +94,45 @@
 </head>
 <body>
   <h1>49s Lucky Pick</h1>
+
   <div id="numbers"></div>
   <div id="timer"></div>
+
   <button id="generateBtn">Generate 5 Sequences</button>
   <button id="membershipBtn">Join Full Membership (R10/month)</button>
   <a href="history.html"><button>📜 View History</button></a>
+
+  <!-- Membership promo message -->
+  <p style="
+    margin-top: 1rem;
+    font-size: 1.1rem;
+    color: #ffcc00;
+    font-weight: bold;
+    text-align: center;
+    user-select: none;
+  ">
+    🎯 Want more picks, anytime? Go full member for just R10/month!
+  </p>
+
+  <!-- Client Trust Message -->
+  <div style="margin-top: 2rem; max-width: 600px; margin-left: auto; margin-right: auto; text-align: center; color: #00ffcc; font-size: 1rem; line-height: 1.6;">
+    <strong>💡 Why Trust This Method?</strong>
+    <div id="trustPreview">
+      Our system uses a finely tuned randomization engine built around UK 49s draw patterns.<br>
+      Each number is uniquely generated with built-in probability logic.<br>
+      🎯 Tested. Balanced. Strategic.<br>
+      Every 6-number set + bonus is precision-crafted for fairness...
+    </div>
+    <div id="trustFull" style="display: none;">
+      <br>🎯 Tested. Balanced. Strategic.<br>
+      Every 6-number set + bonus is precision-crafted for fairness, randomness, and consistency — giving you confidence with every pick.<br><br>
+      🧠 Combine it with your own intuition or stick to our top pick — the odds are always fair, the method never sleeps.
+    </div>
+    <button onclick="toggleTrust()" style="margin-top: 0.5rem; background: none; border: none; color: #00ffff; font-weight: bold; cursor: pointer;">
+      Read More
+    </button>
+  </div>
+
   <div id="cooldownTimer"></div>
 
   <footer>© 2025 49s Lucky Pick<br>Offline | 6x Picks | Bonus Number</footer>
@@ -150,10 +184,12 @@
 
     function addToHistory(sets) {
       const date = new Date().toLocaleString();
-      const entry = `(${date}) ` + sets.map(s => s.main.map(n=>n.toString().padStart(2,'0')).join(' ') + ` [${s.bonus.toString().padStart(2,'0')}]`).join(' | ');
+      const entry = `(${date}) ` + sets
+        .map(s => s.main.map(n => n.toString().padStart(2, '0')).join(' ') + ` [${s.bonus.toString().padStart(2, '0')}]`)
+        .join(' | ');
       let history = JSON.parse(localStorage.getItem('history') || '[]');
       history.unshift(entry);
-      if (history.length > 20) history = history.slice(0, 20);
+      if (history.length > 10) history = history.slice(0, 10);
       localStorage.setItem('history', JSON.stringify(history));
     }
 
@@ -203,6 +239,18 @@
         alert("You are now a Full Member! Unlimited sets unlocked.");
       }
     });
+
+    function toggleTrust() {
+      const full = document.getElementById('trustFull');
+      const btn = event.target;
+      if (full.style.display === 'none') {
+        full.style.display = 'block';
+        btn.textContent = 'Show Less';
+      } else {
+        full.style.display = 'none';
+        btn.textContent = 'Read More';
+      }
+    }
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
