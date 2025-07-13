@@ -4,8 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>49s Lucky Pick</title>
+  <meta name="theme-color" content="#ffcc00" />
   <link rel="manifest" href="manifest.json" />
-  <meta name="theme-color" content="#ffcc00"/>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -19,8 +19,8 @@
       min-height: 100vh;
     }
     h1 {
-      margin-bottom: 0.5rem;
       color: #ffcc00;
+      margin-bottom: 0.5rem;
     }
     .number-set {
       font-size: 1.2rem;
@@ -72,10 +72,6 @@
       opacity: 0.5;
       pointer-events: none;
     }
-    #timer {
-      margin: 1rem 0;
-      color: #aaa;
-    }
     #cooldownTimer {
       margin-top: 2rem;
       font-size: 1.2rem;
@@ -102,7 +98,7 @@
   <button id="membershipBtn">Join Full Membership (R10/month)</button>
   <a href="history.html"><button>📜 View History</button></a>
 
-  <!-- Membership promo message -->
+  <!-- Membership promo -->
   <p style="
     margin-top: 1rem;
     font-size: 1.1rem;
@@ -114,28 +110,26 @@
     🎯 Want more picks, anytime? Go full member for just R10/month!
   </p>
 
-  <!-- Client Trust Message -->
-  <div style="margin-top: 2rem; max-width: 600px; margin-left: auto; margin-right: auto; text-align: center; color: #00ffcc; font-size: 1rem; line-height: 1.6;">
-    <strong>💡 Why Trust This Method?</strong>
+  <!-- Trust Message -->
+  <div style="margin-top: 2rem; max-width: 600px; margin-left: auto; margin-right: auto; text-align: left; color: #ffffff; font-size: 1rem; line-height: 1.6;">
     <div id="trustPreview">
+      Why Trust This Method?<br>
       Our system uses a finely tuned randomization engine built around UK 49s draw patterns.<br>
-      Each number is uniquely generated with built-in probability logic.<br>
-      🎯 Tested. Balanced. Strategic.<br>
-      Every 6-number set + bonus is precision-crafted for fairness...
+      Each number is uniquely generated with built-in probability logic.
     </div>
     <div id="trustFull" style="display: none;">
-      <br>🎯 Tested. Balanced. Strategic.<br>
+      <br>Tested. Balanced. Strategic.<br>
       Every 6-number set + bonus is precision-crafted for fairness, randomness, and consistency — giving you confidence with every pick.<br><br>
-      🧠 Combine it with your own intuition or stick to our top pick — the odds are always fair, the method never sleeps.
+      Combine it with your own intuition or stick to our top pick — the odds are always fair, the method never sleeps.
     </div>
-    <button onclick="toggleTrust()" style="margin-top: 0.5rem; background: none; border: none; color: #00ffff; font-weight: bold; cursor: pointer;">
+    <button onclick="toggleTrust()" style="margin-top: 0.5rem; background: none; border: none; color: #00ffff; font-size: 0.95rem; cursor: pointer;">
       Read More
     </button>
   </div>
 
   <div id="cooldownTimer"></div>
 
-  <footer>© 2025 49s Lucky Pick<br>Offline | 6x Picks | Bonus Number</footer>
+  <footer>© 2025 49s Lucky Pick — Offline | 6x Picks | Bonus Number</footer>
 
   <script>
     const numbersDiv = document.getElementById('numbers');
@@ -143,7 +137,6 @@
     const membershipBtn = document.getElementById('membershipBtn');
     const timerDiv = document.getElementById('timer');
     const cooldownTimer = document.getElementById('cooldownTimer');
-
     const TEN_HOURS = 10 * 60 * 60 * 1000;
 
     function generateSet() {
@@ -158,9 +151,7 @@
 
     function generateAllSets() {
       let all = [];
-      for (let i = 0; i < 5; i++) {
-        all.push(generateSet());
-      }
+      for (let i = 0; i < 5; i++) all.push(generateSet());
       return all;
     }
 
