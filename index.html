@@ -94,12 +94,29 @@
   <div id="numbers"></div>
   <div id="timer"></div>
 
-  <button id="generateBtn">Generate 5 Sequences</button>
-  <button id="membershipBtn">Join Full Membership (R10/month)</button>
+  <!-- Start Trial Button -->
+  <button id="startTrialBtn">Start Free 48-Hour Trial</button>
+
+  <button id="generateBtn" style="display:none;">Generate 5 Sequences</button>
+  <button id="membershipBtn" style="display: none;">Join Full Membership (R10/month)</button>
   <a href="history.html"><button>📜 View History</button></a>
 
+  <!-- Trial Notice -->
+  <p id="trialNotice" style="
+    margin-top: 1rem;
+    font-size: 1.1rem;
+    color: #00ffff;
+    font-weight: bold;
+    text-align: center;
+    user-select: none;
+    display: none;
+  ">
+    🎁 You are on a 48-hour Free Trial! Enjoy limited-time full access.
+  </p>
+
   <!-- Membership promo -->
-  <p style="
+  <p id="membershipPromo" style="
+    display: none;
     margin-top: 1rem;
     font-size: 1.1rem;
     color: #ffcc00;
@@ -137,7 +154,25 @@
     const membershipBtn = document.getElementById('membershipBtn');
     const timerDiv = document.getElementById('timer');
     const cooldownTimer = document.getElementById('cooldownTimer');
+    const startTrialBtn = document.getElementById('startTrialBtn');
+    const trialNotice = document.getElementById('trialNotice');
+    const membershipPromo = document.getElementById('membershipPromo');
     const TEN_HOURS = 10 * 60 * 60 * 1000;
+
+    // Cookie helpers
+    function setCookie(name, value, days) {
+      const expires = new Date(Date.now() + days*24*60*60*1000).toUTCString();
+      document.cookie = name + "=" + encodeURIComponent(value) + "; expires=" + expires + "; path=/";
+    }
+
+    function getCookie(name) {
+      const cookies = document.cookie.split('; ');
+      for (let c of cookies) {
+        const [key, val] = c.split('=');
+        if (key === name) return decodeURIComponent(val);
+      }
+      return null;
+    }
 
     function generateSet() {
       let main = new Set();
@@ -185,7 +220,7 @@
     }
 
     function updateStatus() {
-      const isMember = localStorage.getItem('isMember') === 'true';
+      const isMember = getCookie('isMember') === 'true';
       const lastGen = parseInt(localStorage.getItem('lastGenerated') || '0');
       const now = Date.now();
 
@@ -211,12 +246,66 @@
       }
     }
 
+    // Trial & Membership with Cookies
+    const trialCookie = 'freeTrialStart';
+    const trialDuration = 48 * 60 * 60 * 1000; // 48 hours in ms
+
+    function checkTrialStatus() {
+      const now = Date.now();
+      let start = getCookie(trialCookie);
+      const isMember = getCookie('isMember') === 'true';
+
+      if (isMember) {
+        // Member - show membership notice, hide trial and membership btn
+        startTrialBtn.style.display = 'none';
+        membershipBtn.style.display = 'none';
+        generateBtn.style.display = 'inline-block';
+        trialNotice.textContent = "✅ You are a Full Member. Enjoy unlimited access.";
+        trialNotice.style.display = 'block';
+        membershipPromo.style.display = 'none';
+      } else if (start) {
+        // Trial started
+        const elapsed = now - parseInt(start);
+        if (elapsed < trialDuration) {
+          // Still in trial
+          startTrialBtn.style.display = 'none';
+          membershipBtn.style.display = 'none';
+          generateBtn.style.display = 'inline-block';
+          trialNotice.style.display = 'block';
+          membershipPromo.style.display = 'none';
+        } else {
+          // Trial expired
+          startTrialBtn.style.display = 'none';
+          membershipBtn.style.display = 'inline-block';
+          generateBtn.style.display = 'inline-block';
+          trialNotice.style.display = 'none';
+          membershipPromo.style.display = 'block';
+        }
+      } else {
+        // No trial started yet - show only startTrialBtn, hide everything else
+        startTrialBtn.style.display = 'inline-block';
+        membershipBtn.style.display = 'none';
+        generateBtn.style.display = 'none';
+        trialNotice.style.display = 'none';
+        membershipPromo.style.display = 'none';
+      }
+    }
+
+    startTrialBtn.addEventListener('click', () => {
+      // Start the free trial cookie
+      const now = Date.now();
+      setCookie(trialCookie, now, 2); // 2 days
+      alert("🎉 Free Trial Started! You now have 48 hours of full access.");
+      checkTrialStatus();
+      updateStatus();
+    });
+
     generateBtn.addEventListener('click', () => {
       if (generateBtn.classList.contains('disabled')) return;
       const sets = generateAllSets();
       displaySets(sets);
       addToHistory(sets);
-      if (localStorage.getItem('isMember') !== 'true') {
+      if (getCookie('isMember') !== 'true') {
         localStorage.setItem('lastGenerated', Date.now().toString());
       }
       updateStatus();
@@ -225,9 +314,10 @@
     membershipBtn.addEventListener('click', () => {
       const confirmJoin = confirm("Join Full Membership for R10/month?\n(This is just a simulation in offline mode)");
       if (confirmJoin) {
-        localStorage.setItem('isMember', 'true');
-        updateStatus();
+        setCookie('isMember', 'true', 30); // Member for 30 days
         alert("You are now a Full Member! Unlimited sets unlocked.");
+        checkTrialStatus();
+        updateStatus();
       }
     });
 
@@ -249,6 +339,7 @@
       });
     }
 
+    checkTrialStatus();
     updateStatus();
   </script>
 </body>
