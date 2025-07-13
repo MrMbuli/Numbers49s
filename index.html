@@ -132,124 +132,139 @@
   <footer>© 2025 49s Lucky Pick — Offline | 6x Picks | Bonus Number</footer>
 
   <script>
-    const numbersDiv = document.getElementById('numbers');
-    const generateBtn = document.getElementById('generateBtn');
-    const membershipBtn = document.getElementById('membershipBtn');
-    const timerDiv = document.getElementById('timer');
-    const cooldownTimer = document.getElementById('cooldownTimer');
-    const TEN_HOURS = 10 * 60 * 60 * 1000;
+  const numbersDiv = document.getElementById('numbers');
+  const generateBtn = document.getElementById('generateBtn');
+  const membershipBtn = document.getElementById('membershipBtn');
+  const timerDiv = document.getElementById('timer');
+  const cooldownTimer = document.getElementById('cooldownTimer');
+  const TEN_HOURS = 10 * 60 * 60 * 1000;
+  const TRIAL_PERIOD = 48 * 60 * 60 * 1000;
 
-    function generateSet() {
-      let main = new Set();
-      while (main.size < 6) main.add(Math.floor(Math.random() * 49) + 1);
-      let bonus;
-      do {
-        bonus = Math.floor(Math.random() * 49) + 1;
-      } while (main.has(bonus));
-      return { main: Array.from(main).sort((a,b) => a-b), bonus };
+  function generateSet() {
+    let main = new Set();
+    while (main.size < 6) main.add(Math.floor(Math.random() * 49) + 1);
+    let bonus;
+    do {
+      bonus = Math.floor(Math.random() * 49) + 1;
+    } while (main.has(bonus));
+    return { main: Array.from(main).sort((a, b) => a - b), bonus };
+  }
+
+  function generateAllSets() {
+    let all = [];
+    for (let i = 0; i < 5; i++) all.push(generateSet());
+    return all;
+  }
+
+  function displaySets(sets) {
+    numbersDiv.innerHTML = "";
+
+    const first = sets[0];
+    const topSet = document.createElement('div');
+    topSet.className = 'number-set top-pick';
+    topSet.innerHTML = `Top Pick: ${first.main.map(n => n.toString().padStart(2, '0')).join(' ')} <span class="bonus">${first.bonus.toString().padStart(2, '0')}</span>`;
+    numbersDiv.appendChild(topSet);
+
+    for (let i = 1; i < sets.length; i++) {
+      const set = sets[i];
+      const div = document.createElement('div');
+      div.className = 'number-set';
+      div.innerHTML = `Set ${i + 1}: ${set.main.map(n => n.toString().padStart(2, '0')).join(' ')} <span class="bonus">${set.bonus.toString().padStart(2, '0')}</span>`;
+      numbersDiv.appendChild(div);
+    }
+  }
+
+  function addToHistory(sets) {
+    const date = new Date().toLocaleString();
+    const entry = `(${date}) ` + sets
+      .map(s => s.main.map(n => n.toString().padStart(2, '0')).join(' ') + ` [${s.bonus.toString().padStart(2, '0')}]`)
+      .join(' | ');
+    let history = JSON.parse(localStorage.getItem('history') || '[]');
+    history.unshift(entry);
+    if (history.length > 10) history = history.slice(0, 10);
+    localStorage.setItem('history', JSON.stringify(history));
+  }
+
+  function updateStatus() {
+    const now = Date.now();
+    let trialStart = parseInt(localStorage.getItem('trialStart') || '0');
+    if (!trialStart) {
+      trialStart = now;
+      localStorage.setItem('trialStart', trialStart.toString());
     }
 
-    function generateAllSets() {
-      let all = [];
-      for (let i = 0; i < 5; i++) all.push(generateSet());
-      return all;
-    }
+    const isMember = localStorage.getItem('isMember') === 'true';
+    const trialActive = now - trialStart < TRIAL_PERIOD;
 
-    function displaySets(sets) {
-      numbersDiv.innerHTML = "";
+    // Show/hide membership button
+    membershipBtn.style.display = (trialActive || isMember) ? 'none' : 'inline-block';
 
-      const first = sets[0];
-      const topSet = document.createElement('div');
-      topSet.className = 'number-set top-pick';
-      topSet.innerHTML = `Top Pick: ${first.main.map(n => n.toString().padStart(2,'0')).join(' ')} <span class="bonus">${first.bonus.toString().padStart(2,'0')}</span>`;
-      numbersDiv.appendChild(topSet);
-
-      for (let i = 1; i < sets.length; i++) {
-        const set = sets[i];
-        const div = document.createElement('div');
-        div.className = 'number-set';
-        div.innerHTML = `Set ${i + 1}: ${set.main.map(n => n.toString().padStart(2,'0')).join(' ')} <span class="bonus">${set.bonus.toString().padStart(2,'0')}</span>`;
-        numbersDiv.appendChild(div);
-      }
-    }
-
-    function addToHistory(sets) {
-      const date = new Date().toLocaleString();
-      const entry = `(${date}) ` + sets
-        .map(s => s.main.map(n => n.toString().padStart(2, '0')).join(' ') + ` [${s.bonus.toString().padStart(2, '0')}]`)
-        .join(' | ');
-      let history = JSON.parse(localStorage.getItem('history') || '[]');
-      history.unshift(entry);
-      if (history.length > 10) history = history.slice(0, 10);
-      localStorage.setItem('history', JSON.stringify(history));
-    }
-
-    function updateStatus() {
-      const isMember = localStorage.getItem('isMember') === 'true';
+    if (isMember || trialActive) {
+      generateBtn.classList.remove('disabled');
+      timerDiv.textContent = isMember
+        ? "Full Member Access: Unlimited sets."
+        : "🎁 Trial Active: Unlimited picks for 48 hours.";
+      cooldownTimer.textContent = "";
+    } else {
       const lastGen = parseInt(localStorage.getItem('lastGenerated') || '0');
-      const now = Date.now();
-
-      if (isMember) {
+      const remaining = TEN_HOURS - (now - lastGen);
+      if (remaining > 0) {
+        generateBtn.classList.add('disabled');
+        const hrs = Math.floor(remaining / (1000 * 60 * 60));
+        const mins = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
+        const secs = Math.floor((remaining % (1000 * 60)) / 1000);
+        timerDiv.textContent = `Next free batch in: ${hrs}h ${mins}m ${secs}s`;
+        cooldownTimer.textContent = `⏳ Please wait ${hrs}h ${mins}m ${secs}s before generating new numbers.`;
+        setTimeout(updateStatus, 1000);
+      } else {
         generateBtn.classList.remove('disabled');
-        timerDiv.textContent = "Full Member Access: Unlimited sets.";
+        timerDiv.textContent = "Free Batch Available!";
         cooldownTimer.textContent = "";
-      } else {
-        const remaining = TEN_HOURS - (now - lastGen);
-        if (remaining > 0) {
-          generateBtn.classList.add('disabled');
-          const hrs = Math.floor(remaining / (1000 * 60 * 60));
-          const mins = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
-          const secs = Math.floor((remaining % (1000 * 60)) / 1000);
-          timerDiv.textContent = `Next free batch in: ${hrs}h ${mins}m ${secs}s`;
-          cooldownTimer.textContent = `⏳ Please wait ${hrs}h ${mins}m ${secs}s before generating new numbers.`;
-          setTimeout(updateStatus, 1000);
-        } else {
-          generateBtn.classList.remove('disabled');
-          timerDiv.textContent = "Free Batch Available!";
-          cooldownTimer.textContent = "";
-        }
       }
     }
 
-    generateBtn.addEventListener('click', () => {
-      if (generateBtn.classList.contains('disabled')) return;
-      const sets = generateAllSets();
-      displaySets(sets);
-      addToHistory(sets);
-      if (localStorage.getItem('isMember') !== 'true') {
-        localStorage.setItem('lastGenerated', Date.now().toString());
-      }
-      updateStatus();
-    });
+    if (trialActive) setTimeout(updateStatus, 1000);
+  }
 
-    membershipBtn.addEventListener('click', () => {
-      const confirmJoin = confirm("Join Full Membership for R10/month?\n(This is just a simulation in offline mode)");
-      if (confirmJoin) {
-        localStorage.setItem('isMember', 'true');
-        updateStatus();
-        alert("You are now a Full Member! Unlimited sets unlocked.");
-      }
-    });
-
-    function toggleTrust() {
-      const full = document.getElementById('trustFull');
-      const btn = event.target;
-      if (full.style.display === 'none') {
-        full.style.display = 'block';
-        btn.textContent = 'Show Less';
-      } else {
-        full.style.display = 'none';
-        btn.textContent = 'Read More';
-      }
+  generateBtn.addEventListener('click', () => {
+    if (generateBtn.classList.contains('disabled')) return;
+    const sets = generateAllSets();
+    displaySets(sets);
+    addToHistory(sets);
+    if (localStorage.getItem('isMember') !== 'true') {
+      localStorage.setItem('lastGenerated', Date.now().toString());
     }
-
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js');
-      });
-    }
-
     updateStatus();
-  </script>
+  });
+
+  membershipBtn.addEventListener('click', () => {
+    const confirmJoin = confirm("Join Full Membership for R10/month?\n(This is just a simulation in offline mode)");
+    if (confirmJoin) {
+      localStorage.setItem('isMember', 'true');
+      updateStatus();
+      alert("You are now a Full Member! Unlimited sets unlocked.");
+    }
+  });
+
+  function toggleTrust() {
+    const full = document.getElementById('trustFull');
+    const btn = event.target;
+    if (full.style.display === 'none') {
+      full.style.display = 'block';
+      btn.textContent = 'Show Less';
+    } else {
+      full.style.display = 'none';
+      btn.textContent = 'Read More';
+    }
+  }
+
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js');
+    });
+  }
+
+  updateStatus();
+</script>
 </body>
 </html>
