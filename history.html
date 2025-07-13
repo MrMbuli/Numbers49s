@@ -3,13 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>49s History</title>
-  <meta name="theme-color" content="#111" />
+  <title>49s Lucky Pick - History</title>
   <style>
     body {
+      font-family: Arial, sans-serif;
       background: #111;
       color: #eee;
-      font-family: Arial, sans-serif;
       padding: 1rem;
       max-width: 600px;
       margin: auto;
@@ -20,42 +19,88 @@
       margin-bottom: 1rem;
     }
     ul {
-      list-style: none;
-      padding: 0;
-      background: #222;
-      border-radius: 8px;
-      border: 1px solid #333;
-      overflow-y: auto;
-      max-height: 80vh;
+      list-style-type: none;
+      padding-left: 0;
     }
     li {
-      padding: 0.5rem;
-      border-bottom: 1px solid #333;
-      word-break: break-word;
+      background: #222;
+      margin: 0.4rem 0;
+      padding: 0.6rem 1rem;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      user-select: none;
+    }
+    button {
+      background: #ffcc00;
+      border: none;
+      color: #222;
+      padding: 0.6rem 1.2rem;
+      font-size: 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 1rem;
+      display: block;
+      width: 100%;
+      max-width: 300px;
+      margin-left: auto;
+      margin-right: auto;
+      user-select: none;
+    }
+    button:hover {
+      background: #e6b800;
     }
     a {
       display: block;
-      margin-top: 1rem;
       text-align: center;
-      color: #ffcc00;
+      margin-top: 1rem;
+      color: #00ffff;
       text-decoration: none;
-      font-weight: bold;
+      user-select: none;
+    }
+    a:hover {
+      text-decoration: underline;
     }
   </style>
 </head>
 <body>
-  <h1>📜 Your Lucky Number History</h1>
-  <ul id="historyList"></ul>
+  <h1>History - Last 10 Picks</h1>
+  <ul id="historyList">
+    <li>Loading history...</li>
+  </ul>
+  <button id="clearHistoryBtn">Clear History</button>
   <a href="index.html">← Back to Generator</a>
 
   <script>
     const historyList = document.getElementById('historyList');
-    const history = JSON.parse(localStorage.getItem('history') || '[]');
-    history.forEach(item => {
-      const li = document.createElement('li');
-      li.textContent = item;
-      historyList.appendChild(li);
+    const clearBtn = document.getElementById('clearHistoryBtn');
+
+    function loadHistory() {
+      let history = JSON.parse(localStorage.getItem('history') || '[]');
+      historyList.innerHTML = '';
+
+      if (history.length === 0) {
+        historyList.innerHTML = '<li>No history found.</li>';
+        clearBtn.style.display = 'none';
+        return;
+      }
+
+      clearBtn.style.display = 'block';
+
+      history.forEach(entry => {
+        const li = document.createElement('li');
+        li.textContent = entry;
+        historyList.appendChild(li);
+      });
+    }
+
+    clearBtn.addEventListener('click', () => {
+      if (confirm('Are you sure you want to clear your history?')) {
+        localStorage.removeItem('history');
+        loadHistory();
+      }
     });
+
+    loadHistory();
   </script>
 </body>
 </html>
